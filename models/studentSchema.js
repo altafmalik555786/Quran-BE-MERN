@@ -25,6 +25,22 @@ const studentSchema = new mongoose.Schema({
         type: Boolean,
         required: true
     },
+    cellPhone: {
+        type: String,
+        required: false
+    },
+    dateOfBirth: {
+        type: String,
+        required: false
+    },
+    image: {
+        type: String, // URL or path to image
+        required: false
+    },
+    language: {
+        type: String,
+        required: false
+    },
     studentGender: {
         type: String,
         required: false
@@ -41,6 +57,10 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: false
     },
+    address: {
+        type: String,
+        required: false
+    },
     tutorGender: {
         type: String,
         required: false
@@ -49,9 +69,14 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    learningInterests: {
-        type: [String],
+    subjects: {
+        type: [String], // e.g., ['Recitation', 'Hifz', 'Arabic', 'Tajweed']
         required: false,
+        default: []
+    },
+    receiveMessages: { // New field
+        type: Boolean,
+        default: false
     },
     isDeleted: {
         type: Boolean,
