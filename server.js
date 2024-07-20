@@ -3,7 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 require('dotenv').config();
-// const Routes = require('./routes/route.js');
+const studentRoutes = require('./routes/routes');
 
 const app = express();
 const PORT = process.env.PORT
@@ -18,7 +18,7 @@ app.use(cors());
 connectDB();
 
 // Routes
-// app.use('/', Routes);
+app.use('/api/v1', studentRoutes);
 
 // Test route
 app.get('/', (req, res) => {
