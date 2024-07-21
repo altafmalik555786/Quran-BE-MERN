@@ -77,14 +77,6 @@ const studentSchema = new mongoose.Schema({
     receiveMessages: { // New field
         type: Boolean,
         default: false
-    },
-    isDeleted: {
-        type: Boolean,
-        default: false
-    },
-    isWarning: {
-        type: Boolean,
-        default: false
     }
 }, {
     timestamps: true

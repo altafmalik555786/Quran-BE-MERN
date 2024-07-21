@@ -28,5 +28,4 @@ router.post('/:studentId/preferences', studentPreferences);
 router.put('/:studentId/change-password', validationMiddleware(changePasswordValidation), changePassword);
 router.put('/:studentId/update-profile', upload.single("image"), validationMiddleware(updateProfileValidation), updateProfile);
 
-
 module.exports = router;
