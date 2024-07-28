@@ -49,6 +49,10 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: false
     },
+    verificationToken: {
+        type: String,
+        required: false
+    },
     timeZone: {
         type: String,
         required: false
@@ -74,7 +78,11 @@ const studentSchema = new mongoose.Schema({
         required: false,
         default: []
     },
-    receiveMessages: { // New field
+    role: {
+        type: String,
+        required: true 
+      },
+    receiveMessages: { 
         type: Boolean,
         default: false
     }
