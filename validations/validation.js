@@ -1,12 +1,25 @@
 const Joi = require('joi');
 
 const signUpEmailValidation = Joi.object({
+    // General information
     name: Joi.string().min(3).max(50).required(),
     email: Joi.string().email().required(),
     role: Joi.string().valid('student', 'teacher', 'admin').required(), // Valid roles
-    password: Joi.string().min(6).max(20).required(),
-    termsAgreed: Joi.boolean().required()
+    password: Joi.string().min(4).max(20).required(),
+    termsAgreed: Joi.boolean().required(),
+
+    // Timezone information
+    studentGender: Joi.string().min(3).max(50).required(),
+    country: Joi.string().min(3).max(50).required(),
+    timeZone: Joi.string().min(3).max(30).required(),
+    city: Joi.string().min(3).max(30).required(),
+
+    // Preferences
+    tutorGender: Joi.string().required(),
+    hourlyRate: Joi.string().required(),
+    subjects: Joi.array().items(Joi.string()).required(),
 });
+
 const changePasswordValidation = Joi.object({
     oldPassword: Joi.string().min(6).required(),
     newPassword: Joi.string().min(6).required(),
@@ -32,5 +45,6 @@ const updateProfileValidation = Joi.object({
 module.exports = {
     signUpEmailValidation,
     changePasswordValidation,
-    updateProfileValidation
+    updateProfileValidation,
+  
 };

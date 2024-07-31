@@ -13,6 +13,7 @@ const {
   signUpEmailValidation,
   changePasswordValidation,
   updateProfileValidation,
+
 } = require("../validations/validation");
 const validationMiddleware = require("../middlewares/validationMiddleware");
 
@@ -32,8 +33,8 @@ const upload = multer({ storage: storage });
 router.post("/register",validationMiddleware(signUpEmailValidation),studentRegister);
 router.get("/verify-email", verifyEmail);
 router.post("/login", studentLogin);
-router.post("/:studentId/timezone", studentTimezone);
-router.post("/:studentId/preferences", studentPreferences);
+// router.post("/:studentId/timezone",validationMiddleware(studentTimezonelValidation), studentTimezone);
+// router.post("/:studentId/preferences",validationMiddleware(studentPreferenceValidation), studentPreferences);
 router.put("/:studentId/change-password",validationMiddleware(changePasswordValidation),changePassword);
 router.put("/:studentId/update-profile",upload.single("image"),validationMiddleware(updateProfileValidation), updateProfile);
 
