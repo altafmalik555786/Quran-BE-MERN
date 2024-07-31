@@ -74,7 +74,7 @@ const studentSchema = new mongoose.Schema({
         required: false
     },
     subjects: {
-        type: [String], // e.g., ['Recitation', 'Hifz', 'Arabic', 'Tajweed']
+        type: [String], 
         required: false,
         default: []
     },
