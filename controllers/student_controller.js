@@ -2,10 +2,11 @@ const Student = require("../models/studentSchema");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-const sendVerificationEmail = require("../utils/studentEmailVerification");
+const {
+  generateVerificationCode,
+  sendVerificationEmail,
+} = require("../utils/studentEmailVerification");
 
-// Register student
-// Registration function handling all fields
 const studentRegister = async (req, res) => {
   const {
     name,
@@ -34,7 +35,7 @@ const studentRegister = async (req, res) => {
     // Hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const verificationToken = crypto.randomBytes(8).toString("hex");
+    const verificationCode = generateVerificationCode();
 
     // Create a new student record with all the fields
     const student = new Student({
@@ -43,7 +44,7 @@ const studentRegister = async (req, res) => {
       password: hashedPassword,
       termsAgreed,
       role,
-      verificationToken,
+      verificationCode,
       studentGender,
       country,
       timeZone,
@@ -54,12 +55,16 @@ const studentRegister = async (req, res) => {
     });
 
     await student.save();
+    const token = jwt.sign(
+      { id: student._id, email: student.email, role: student.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+    await sendVerificationEmail(email, name, verificationCode);
 
-    await sendVerificationEmail(email, name, verificationToken);
-
-    res.status(201).send({
+    res.status(200).send({
       message: "Registration successful, please verify your email.",
-      role,
+      token
     });
   } catch (error) {
     res.status(400).send(error.message);
@@ -67,20 +72,24 @@ const studentRegister = async (req, res) => {
 };
 
 const verifyEmail = async (req, res) => {
-  const { token } = req.query;
+  const { code } = req.body;
   try {
-    const student = await Student.findOne({ verificationToken: token });
+    // Find the student by verification code
+    const student = await Student.findOne({ verificationCode: code });
     if (!student) {
-      return res.status(400).send({ message: "Invalid or expired token." });
+      return res
+        .status(400)
+        .send({ message: "Invalid or expired verification code." });
     }
 
+    // Set the email as verified and clear the verification code
     student.isEmailVerify = true;
-    student.verificationToken = undefined; // Clear the token after verification
+    student.verificationCode = undefined;
     await student.save();
 
     res.status(200).send({ message: "Email verified successfully." });
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).send({ message: error.message });
   }
 };
 
@@ -96,7 +105,7 @@ const studentLogin = async (req, res) => {
     // Check if the password is correct
     const isMatch = await bcrypt.compare(password, student.password);
     if (!isMatch) {
-      return res.status(400).send({ message: "Invalid email or password." });
+      return res.status(400).send({ message: "your password invalid." });
     }
 
     // Check if email is verified

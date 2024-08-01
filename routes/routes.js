@@ -31,10 +31,8 @@ const upload = multer({ storage: storage });
 
 // Student Routes
 router.post("/register",validationMiddleware(signUpEmailValidation),studentRegister);
-router.get("/verify-email", verifyEmail);
+router.post("/verify-email", verifyEmail);
 router.post("/login", studentLogin);
-// router.post("/:studentId/timezone",validationMiddleware(studentTimezonelValidation), studentTimezone);
-// router.post("/:studentId/preferences",validationMiddleware(studentPreferenceValidation), studentPreferences);
 router.put("/:studentId/change-password",validationMiddleware(changePasswordValidation),changePassword);
 router.put("/:studentId/update-profile",upload.single("image"),validationMiddleware(updateProfileValidation), updateProfile);
 
