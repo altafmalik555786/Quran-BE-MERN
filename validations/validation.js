@@ -17,7 +17,7 @@ const signUpEmailValidation = Joi.object({
     // Preferences
     tutorGender: Joi.string().required(),
     hourlyRate: Joi.string().required(),
-    subjects: Joi.array().items(Joi.string()).required(),
+    subjects: Joi.array().items(Joi.string()).allow('', null),
 });
 
 const changePasswordValidation = Joi.object({

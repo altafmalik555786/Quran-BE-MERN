@@ -49,7 +49,7 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    verificationToken: {
+    verificationCode: {
         type: String,
         required: false
     },
