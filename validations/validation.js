@@ -4,7 +4,7 @@ const signUpEmailValidation = Joi.object({
     // General information
     name: Joi.string().min(3).max(50).required(),
     email: Joi.string().email().required(),
-    role: Joi.string().valid('student', 'teacher', 'admin').required(), // Valid roles
+    role: Joi.string().valid('student', 'teacher', 'admin').required(), 
     password: Joi.string().min(4).max(20).required(),
     termsAgreed: Joi.boolean().required(),
 

@@ -64,7 +64,8 @@ const studentRegister = async (req, res) => {
 
     res.status(200).send({
       message: "Registration successful, please verify your email.",
-      token
+      token,
+      role,
     });
   } catch (error) {
     res.status(400).send(error.message);
