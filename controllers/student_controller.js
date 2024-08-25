@@ -269,8 +269,21 @@ const updateProfile = async (req, res) => {
     res.status(400).send({ message: error.message });
   }
 };
+const getStudentProfile = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const student = await Student.findById(studentId).select('-password'); // Exclude the password from the response
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+    res.status(200).json(student);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 module.exports = {
+  getStudentProfile,
   studentRegister,
   studentTimezone,
   studentPreferences,

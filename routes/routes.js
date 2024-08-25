@@ -7,7 +7,8 @@ const {
   changePassword,
   updateProfile,
   studentLogin,
-  verifyEmail
+  verifyEmail,
+  getStudentProfile
 } = require("../controllers/student_controller");
 const {
   signUpEmailValidation,
@@ -33,6 +34,7 @@ const upload = multer({ storage: storage });
 router.post("/register",validationMiddleware(signUpEmailValidation),studentRegister);
 router.post("/verify-email", verifyEmail);
 router.post("/login", studentLogin);
+router.get('/:studentId/profile', getStudentProfile);
 router.put("/:studentId/change-password",validationMiddleware(changePasswordValidation),changePassword);
 router.put("/:studentId/update-profile",upload.single("image"),validationMiddleware(updateProfileValidation), updateProfile);
 
