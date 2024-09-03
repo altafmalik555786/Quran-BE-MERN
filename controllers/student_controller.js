@@ -2,6 +2,7 @@ const Student = require("../models/studentSchema");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+
 const {
   generateVerificationCode,
   sendVerificationEmail,
@@ -97,16 +98,26 @@ const verifyEmail = async (req, res) => {
 const studentLogin = async (req, res) => {
   const { email, password } = req.body;
   try {
+    // Check if both email and password are provided
+    if (!email || !password) {
+      return res.status(400).send({ message: "Email and password are required." });
+    }
+
     // Find the student by email
     const student = await Student.findOne({ email });
     if (!student) {
       return res.status(400).send({ message: "Invalid email or password." });
     }
 
+    // Check if the password field exists for the student
+    if (!student.password) {
+      return res.status(500).send({ message: "Password is not set for this user." });
+    }
+
     // Check if the password is correct
     const isMatch = await bcrypt.compare(password, student.password);
     if (!isMatch) {
-      return res.status(400).send({ message: "your password invalid." });
+      return res.status(400).send({ message: "Invalid email or password." });
     }
 
     // Check if email is verified
@@ -127,9 +138,12 @@ const studentLogin = async (req, res) => {
       token,
     });
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).send({ error: "Server error. Please try again later." });
   }
 };
+
+
 
 // Update student timezone
 const studentTimezone = async (req, res) => {
