@@ -66,7 +66,19 @@ const studentRegister = async (req, res) => {
     res.status(200).send({
       message: "Registration successful, please verify your email.",
       token,
-      role,
+      user: {
+        id: student._id,
+        name: student.name,
+        email: student.email,
+        role: student.role,
+        studentGender: student.studentGender,
+        country: student.country,
+        timeZone: student.timeZone,
+        city: student.city,
+        tutorGender: student.tutorGender,
+        hourlyRate: student.hourlyRate,
+        subjects: student.subjects,
+      },
     });
   } catch (error) {
     res.status(400).send(error.message);
