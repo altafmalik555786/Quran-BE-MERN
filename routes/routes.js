@@ -1,5 +1,6 @@
 const express = require("express");
 const multer = require("multer");
+// student controllers 
 const {
   studentRegister,
   studentTimezone,
@@ -17,6 +18,9 @@ const {
 } = require("../validations/validation");
 const validationMiddleware = require("../middlewares/validationMiddleware");
 const authenticateToken = require("../middlewares/authenticateToken.js");
+
+
+
 const router = express.Router();
 
 // Configure multer
@@ -37,5 +41,9 @@ router.post("/login", studentLogin);
 router.get('/:studentId/profile', authenticateToken, getStudentProfile);
 router.put("/:studentId/change-password", validationMiddleware(changePasswordValidation), changePassword);
 router.put("/:studentId/update-profile", upload.single("image"), updateProfile);
+
+
+// Tutor Routes
+
 
 module.exports = router;

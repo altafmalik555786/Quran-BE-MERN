@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 require('dotenv').config();
 const connectDB = require('./config/db');
 const studentRoutes = require('./routes/routes');
+const tutorRoutes = require('./routes/tutorRoutes');
 
 const app = express();
 const PORT = process.env.PORT
@@ -19,11 +20,12 @@ connectDB();
 
 // Routes
 app.use('/api/v1', studentRoutes);
+app.use('/api/v1/tutor', tutorRoutes);
 
 // Test route
 app.get('/', (req, res) => {
-    res.send('Server is running!');
-  });
+  res.send('Server is running!');
+});
 // Start server
 app.listen(PORT, () => {
   console.log(`Server started at port no. ${PORT}`);
