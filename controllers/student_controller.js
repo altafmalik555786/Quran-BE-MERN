@@ -14,7 +14,7 @@ const studentRegister = async (req, res) => {
     email,
     password,
     termsAgreed,
-    role,
+    role = "student",
     studentGender,
     country,
     timeZone,
