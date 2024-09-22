@@ -341,13 +341,14 @@ const getStudentProfile = async (req, res) => {
     }
 
     res.status(200).json({
-      ...student._doc,
-      image: imageUrl, // Include the full image URL in the response
+      ...student._doc, // Spread the student's document
+      image: imageUrl,  // Include the full image URL in the response
     });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
 

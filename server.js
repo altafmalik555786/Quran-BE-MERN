@@ -5,10 +5,15 @@ require('dotenv').config();
 const connectDB = require('./config/db');
 const studentRoutes = require('./routes/routes');
 const tutorRoutes = require('./routes/tutorRoutes');
+const path = require("path");
+
+// Serve the 'uploads' folder
+
 
 const app = express();
 const PORT = process.env.PORT
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 dotenv.config();
 
 // Middleware
