@@ -67,6 +67,19 @@ const tutorRegister = async (req, res) => {
         res.status(200).send({
             message: "Registration successful, please verify your email.",
             token,
+            user: {
+                id: tutor._id,
+                name: tutor.name,
+                email: tutor.email,
+                role: tutor.role,
+                studentGender: tutor.studentGender,
+                country: tutor.country,
+                timeZone: tutor.timeZone,
+                city: tutor.city,
+                tutorGender: tutor.tutorGender,
+                hourlyRate: tutor.hourlyRate,
+                subjects: tutor.subjects,
+              },
 
         });
     } catch (error) {

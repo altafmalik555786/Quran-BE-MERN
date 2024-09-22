@@ -42,7 +42,6 @@ router.get('/:studentId/profile', authenticateToken, getStudentProfile);
 router.put("/:studentId/change-password", validationMiddleware(changePasswordValidation), changePassword);
 router.put("/:studentId/update-profile", upload.single("image"), updateProfile);
 
-
 // Tutor Routes
 
 

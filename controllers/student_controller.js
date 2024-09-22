@@ -2,6 +2,8 @@ const Student = require("../models/studentSchema");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+const path = require('path');
+
 
 const {
   generateVerificationCode,
@@ -256,6 +258,8 @@ const updateProfile = async (req, res) => {
     hourlyRate,
     subjects,
     receiveMessages,
+    oldPassword,
+    newPassword,
   } = req.body;
 
   try {
@@ -287,6 +291,30 @@ const updateProfile = async (req, res) => {
       student.image = req.file.path; // Update the image path if a new image is uploaded
     }
 
+    // Handle password change if oldPassword and newPassword are provided
+    if (oldPassword && newPassword) {
+      // Check if the old password matches
+      const isMatch = await bcrypt.compare(oldPassword, student.password);
+      if (!isMatch) {
+        return res.status(400).send({ message: "Old password is incorrect" });
+      }
+
+      // Check if the new password is the same as the old password
+      const isNewPasswordSame = await bcrypt.compare(newPassword, student.password);
+      if (isNewPasswordSame) {
+        return res.status(400).send({
+          message: "New password cannot be the same as the old password",
+        });
+      }
+
+      // Hash the new password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+      // Update the student's password
+      student.password = hashedPassword;
+    }
+
     // Save the updated student
     await student.save();
 
@@ -295,18 +323,34 @@ const updateProfile = async (req, res) => {
     res.status(400).send({ message: error.message });
   }
 };
+
+
 const getStudentProfile = async (req, res) => {
   try {
     const { studentId } = req.params;
-    const student = await Student.findById(studentId).select('-password'); // Exclude the password from the response
+    const student = await Student.findById(studentId).select('-password');
+
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
-    res.status(200).json(student);
+
+    // Generate the full URL for the image if it exists
+    let imageUrl = null;
+    if (student.image) {
+      imageUrl = `${req.protocol}://${req.get('host')}/${student.image}`;
+    }
+
+    res.status(200).json({
+      ...student._doc,
+      image: imageUrl, // Include the full image URL in the response
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
+
 
 module.exports = {
   getStudentProfile,

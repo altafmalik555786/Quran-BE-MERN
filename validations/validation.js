@@ -21,8 +21,8 @@ const signUpEmailValidation = Joi.object({
 });
 
 const changePasswordValidation = Joi.object({
-    oldPassword: Joi.string().min(6).required(),
-    newPassword: Joi.string().min(6).required(),
+    oldPassword: Joi.string().min(4).required(),
+    newPassword: Joi.string().min(4).required(),
 });
 const updateProfileValidation = Joi.object({
     name: Joi.string().min(3).max(50).required(),
