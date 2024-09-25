@@ -158,8 +158,31 @@ const tutorLogin = async (req, res) => {
     }
 };
 
+
+
+const getAllTutors = async (req, res) => {
+    try {
+      // Fetch all tutors, excluding sensitive fields like password and verification code
+      const tutors = await Tutor.find({}, { password: 0, verificationCode: 0 });
+  
+      // Check if tutors exist
+      if (!tutors || tutors.length === 0) {
+        return res.status(404).send({ message: "No tutors found." });
+      }
+  
+      res.status(200).send({
+        message: "Tutors retrieved successfully.",
+        tutors
+      });
+    } catch (error) {
+      console.error("Error fetching tutors:", error);
+      res.status(500).send({ message: "Server error. Please try again later." });
+    }
+  };
+
 module.exports = {
     tutorRegister,
     verifyEmail,
     tutorLogin,
+    getAllTutors,
 };
