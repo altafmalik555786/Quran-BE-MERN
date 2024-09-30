@@ -193,7 +193,7 @@ const getAllTutors = async (req, res) => {
 
 const editTutorProfile = async (req, res) => {
     const { id } = req.params;  // Tutor ID to update
-    const { hourlyRate, language, fiqh, sect } = req.body; // Fields to update
+    const { hourlyRate, language, fiqh, sect, description, subjects } = req.body; // Fields to update
 
     try {
         // Find the tutor by ID
@@ -207,6 +207,8 @@ const editTutorProfile = async (req, res) => {
         tutor.language = language || tutor.language;
         tutor.fiqh = fiqh || tutor.fiqh;
         tutor.sect = sect || tutor.sect;
+        tutor.description = description || tutor.description; // Add this line to update the description
+        tutor.subjects = subjects || tutor.subjects; // Update subjects with the new array
 
         // Handle image upload if a file is present
         if (req.file) {
@@ -231,6 +233,7 @@ const editTutorProfile = async (req, res) => {
         res.status(500).json({ message: 'Error updating tutor profile', error: error.message });
     }
 };
+
 
 
 

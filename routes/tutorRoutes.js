@@ -3,6 +3,13 @@ const path = require('path');
 const express = require("express");
 const multer = require("multer");
 // tutor controllers 
+const {
+  addSchedule,
+  getSchedules,
+  updateSchedule,
+  deleteSchedule,
+} = require('../controllers/scheduleController');
+
 const { tutorRegister, verifyEmail, tutorLogin, getAllTutors, editTutorProfile } = require("../controllers/tutor_controller");
 
 const router = express.Router();
@@ -26,5 +33,10 @@ router.post("/verify-email", verifyEmail);
 router.post("/login", tutorLogin);
 router.get("/list", getAllTutors);
 router.put('/:id/edit',upload.single("image"), editTutorProfile);
+// add schedule routes 
+router.post('/add-schedule', addSchedule);
+router.get('/get-schedule', getSchedules);
+router.put('/update-schedule/:id', updateSchedule);
+router.delete('/delete-schedule/:id', deleteSchedule);
 
 module.exports = router;
