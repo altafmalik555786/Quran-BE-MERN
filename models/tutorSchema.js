@@ -48,11 +48,32 @@ const tutorSchema = new mongoose.Schema({
         required: true
     },
 
-
     hourlyRate: {
         type: String,
         required: true
     },
+    language: {
+        type: String,
+        required: false
+    },
+    fiqh: {
+        type: String,
+        required: false
+    },
+    sect: {
+        type: String,
+        required: false
+    },
+    image: {
+        type: String,
+        required: false
+    },
+
+    description: {
+        type: String,
+        required: false
+    },
+
     subjects: {
         type: [String],
         required: false,

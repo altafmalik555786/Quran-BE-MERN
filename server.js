@@ -14,6 +14,7 @@ const app = express();
 const PORT = process.env.PORT
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('uploads/tutor', express.static(path.join(__dirname, 'uploads/tutor')));
 dotenv.config();
 
 // Middleware

@@ -349,6 +349,36 @@ const getStudentProfile = async (req, res) => {
   }
 };
 
+const getAllStudents = async (req, res) => {
+  try {
+    const students = await Student.find({}, { password: 0, verificationCode: 0 });
+
+    // Check if students exist
+    if (!students || students.length === 0) {
+      return res.status(404).send({ message: "No students found." });
+    }
+
+    // Map the students to include the correct image URL
+    const formattedStudents = students.map(student => {
+      const imagePath = student.image ? student.image.replace(/\\/g, '/') : null; // Ensure imagePath is defined
+      return {
+        ...student.toObject(),
+        image: imagePath ? `${req.protocol}://${req.get('host')}/uploads/${imagePath}` : null, // Convert to URL or null
+      };
+    });
+
+    res.status(200).send({
+      message: "Students retrieved successfully.",
+      students: formattedStudents,
+    });
+  } catch (error) {
+    console.error("Error fetching students:", error);
+    res.status(500).send({ message: "Server error. Please try again later." });
+  }
+};
+
+
+
 
 
 
@@ -362,4 +392,5 @@ module.exports = {
   updateProfile,
   studentLogin,
   verifyEmail,
+  getAllStudents
 };

@@ -85,7 +85,24 @@ const studentSchema = new mongoose.Schema({
     receiveMessages: { 
         type: Boolean,
         default: false
-    }
+    },
+    plan: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'StudentPlan',
+        required: false
+    },
+    planStartDate: {
+        type: Date,
+        required: false
+    },
+    nextPlanChangeDate: {
+        type: Date,
+        required: false
+    },
+    currentSchedule: {
+        type: Object,  // Contains current schedule information (tutor, timing, etc.)
+        required: false
+    },
 }, {
     timestamps: true
 });

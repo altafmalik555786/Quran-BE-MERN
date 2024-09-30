@@ -79,7 +79,7 @@ const tutorRegister = async (req, res) => {
                 tutorGender: tutor.tutorGender,
                 hourlyRate: tutor.hourlyRate,
                 subjects: tutor.subjects,
-              },
+            },
 
         });
     } catch (error) {
@@ -162,27 +162,86 @@ const tutorLogin = async (req, res) => {
 
 const getAllTutors = async (req, res) => {
     try {
-      // Fetch all tutors, excluding sensitive fields like password and verification code
-      const tutors = await Tutor.find({}, { password: 0, verificationCode: 0 });
-  
-      // Check if tutors exist
-      if (!tutors || tutors.length === 0) {
-        return res.status(404).send({ message: "No tutors found." });
-      }
-  
-      res.status(200).send({
-        message: "Tutors retrieved successfully.",
-        tutors
-      });
+        // Fetch all tutors, excluding sensitive fields like password and verification code
+        const tutors = await Tutor.find({}, { password: 0, verificationCode: 0 });
+         console.log('tutors list',tutors);
+         
+        // Check if tutors exist
+        if (!tutors || tutors.length === 0) {
+            return res.status(404).send({ message: "No tutors found." });
+        }
+
+        // Map the tutors to include the correct image URL
+        const tutorsWithImages = tutors.map(tutor => {
+            const imageUrl = tutor.image ? `${req.protocol}://${req.get('host')}/${tutor.image}` : null;
+            return {
+                ...tutor.toObject(), // Convert mongoose document to plain object
+                image: imageUrl, // Include the image URL in the response
+            };
+        });
+
+        res.status(200).send({
+            message: "Tutors retrieved successfully.",
+            tutors: tutorsWithImages, // Return the list of tutors with images
+        });
     } catch (error) {
-      console.error("Error fetching tutors:", error);
-      res.status(500).send({ message: "Server error. Please try again later." });
+        console.error("Error fetching tutors:", error);
+        res.status(500).send({ message: "Server error. Please try again later." });
     }
-  };
+};
+
+
+const editTutorProfile = async (req, res) => {
+    const { id } = req.params;  // Tutor ID to update
+    const { hourlyRate, language, fiqh, sect } = req.body; // Fields to update
+
+    try {
+        // Find the tutor by ID
+        const tutor = await Tutor.findById(id);
+        if (!tutor) {
+            return res.status(404).json({ message: "Tutor not found" });
+        }
+
+        // Update fields if they exist in the request
+        tutor.hourlyRate = hourlyRate || tutor.hourlyRate;
+        tutor.language = language || tutor.language;
+        tutor.fiqh = fiqh || tutor.fiqh;
+        tutor.sect = sect || tutor.sect;
+
+        // Handle image upload if a file is present
+        if (req.file) {
+            tutor.image = req.file.path.replace(/\\/g, '/'); // Normalize the path for cross-platform compatibility
+        }
+
+        // Save the updated tutor profile
+        await tutor.save();
+
+        // Respond with the updated tutor profile, including the correct image URL if available
+        const imageUrl = tutor.image ? `${req.protocol}://${req.get('host')}/${tutor.image}` : null;
+
+        res.status(200).send({
+            message: "Profile updated successfully.",
+            tutor: {
+                ...tutor.toObject(),
+                image: imageUrl,  // Full URL of the image if it exists
+            },
+        });
+    } catch (error) {
+        console.error('Error updating tutor profile:', error);
+        res.status(500).json({ message: 'Error updating tutor profile', error: error.message });
+    }
+};
+
+
+
+
+
+
 
 module.exports = {
     tutorRegister,
     verifyEmail,
     tutorLogin,
     getAllTutors,
+    editTutorProfile
 };

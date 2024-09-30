@@ -9,7 +9,8 @@ const {
   updateProfile,
   studentLogin,
   verifyEmail,
-  getStudentProfile
+  getStudentProfile,
+  getAllStudents
 } = require("../controllers/student_controller");
 const {
   signUpEmailValidation,
@@ -18,6 +19,7 @@ const {
 } = require("../validations/validation");
 const validationMiddleware = require("../middlewares/validationMiddleware");
 const authenticateToken = require("../middlewares/authenticateToken.js");
+const { addStudentPlan } = require("../controllers/studentPlanController.js");
 
 
 
@@ -38,9 +40,12 @@ const upload = multer({ storage: storage });
 router.post("/register", validationMiddleware(signUpEmailValidation), studentRegister);
 router.post("/verify-email", verifyEmail);
 router.post("/login", studentLogin);
+router.post("/add-student-plan/:studentId", addStudentPlan);
 router.get('/:studentId/profile', authenticateToken, getStudentProfile);
 router.put("/:studentId/change-password", validationMiddleware(changePasswordValidation), changePassword);
 router.put("/:studentId/update-profile", upload.single("image"), updateProfile);
+router.get("/students-list", getAllStudents);
+
 
 // Tutor Routes
 
