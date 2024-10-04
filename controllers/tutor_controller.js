@@ -157,6 +157,43 @@ const tutorLogin = async (req, res) => {
         res.status(500).send({ error: "Server error. Please try again later." });
     }
 };
+const changeTutorPassword = async (req, res) => {
+    const { oldPassword, newPassword } = req.body;
+    const { tutorId } = req.params;
+
+    try {
+        const tutor = await Tutor.findById(tutorId);
+        if (!tutor) {
+            return res.status(404).send({ message: "Tutor not found" });
+        }
+
+        // Check if the old password matches
+        const isMatch = await bcrypt.compare(oldPassword, tutor.password);
+        if (!isMatch) {
+            return res.status(400).send({ message: "Old password is incorrect" });
+        }
+
+        // Check if the new password is the same as the old password
+        const isNewPasswordSame = await bcrypt.compare(newPassword, tutor.password);
+        if (isNewPasswordSame) {
+            return res.status(400).send({
+                message: "New password cannot be the same as the old password",
+            });
+        }
+
+        // Hash the new password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Update the tutor's password
+        tutor.password = hashedPassword;
+        await tutor.save();
+
+        res.status(200).send({ message: "Password updated successfully" });
+    } catch (error) {
+        res.status(400).send({ message: error.message });
+    }
+};
 
 
 
@@ -164,8 +201,8 @@ const getAllTutors = async (req, res) => {
     try {
         // Fetch all tutors, excluding sensitive fields like password and verification code
         const tutors = await Tutor.find({}, { password: 0, verificationCode: 0 });
-         console.log('tutors list',tutors);
-         
+        console.log('tutors list', tutors);
+
         // Check if tutors exist
         if (!tutors || tutors.length === 0) {
             return res.status(404).send({ message: "No tutors found." });
@@ -189,6 +226,32 @@ const getAllTutors = async (req, res) => {
         res.status(500).send({ message: "Server error. Please try again later." });
     }
 };
+// Define a new route to get a specific tutor by ID
+
+
+const getTutorById = async (req, res) => {
+    const tutorId = req.params.id; // Get the tutor ID from the URL
+
+    try {
+        // Fetch the tutor by ID, excluding sensitive fields like password, verificationCode, and image
+        const tutor = await Tutor.findById(tutorId, { password: 0, verificationCode: 0, image: 0 });
+
+        // Check if the tutor exists
+        if (!tutor) {
+            return res.status(404).send({ message: "Tutor not found." });
+        }
+
+        // Send the tutor's data without the image
+        res.status(200).send({
+            message: "Tutor retrieved successfully.",
+            tutor: tutor.toObject(), // Convert mongoose document to plain object
+        });
+    } catch (error) {
+        console.error("Error fetching tutor:", error);
+        res.status(500).send({ message: "Server error. Please try again later." });
+    }
+};
+
 
 
 const editTutorProfile = async (req, res) => {
@@ -233,6 +296,38 @@ const editTutorProfile = async (req, res) => {
         res.status(500).json({ message: 'Error updating tutor profile', error: error.message });
     }
 };
+const updateTutorProfile = async (req, res) => {
+    const { tutorId } = req.params;
+    const { name, address, country, timeZone, city, phone } = req.body;
+
+    console.log("Updating tutor with ID:", tutorId);
+    console.log("Received data:", req.body);
+  
+    try {
+        const tutor = await Tutor.findById(tutorId);
+        if (!tutor) {
+            return res.status(404).send({ message: "Tutor not found" });
+        }
+  
+        // Update tutor details
+        tutor.name = name || tutor.name;
+        tutor.address = address || tutor.address;
+        tutor.country = country || tutor.country;
+        tutor.timeZone = timeZone || tutor.timeZone;
+        tutor.city = city || tutor.city;
+        tutor.phone = phone || tutor.phone;
+
+        await tutor.save();
+  
+        res.status(200).send({ message: "Tutor profile updated successfully" });
+    } catch (error) {
+        console.error('Error updating tutor profile:', error);
+        res.status(400).send({ message: error.message });
+    }
+};
+
+
+
 
 
 
@@ -245,6 +340,9 @@ module.exports = {
     tutorRegister,
     verifyEmail,
     tutorLogin,
+    changeTutorPassword,
     getAllTutors,
-    editTutorProfile
+    getTutorById,
+    editTutorProfile,
+    updateTutorProfile
 };
