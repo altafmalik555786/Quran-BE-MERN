@@ -3,12 +3,11 @@ const path = require('path');
 const express = require("express");
 const multer = require("multer");
 // tutor controllers 
-const {
-  addSchedule,
-  getSchedules,
+const { addSchedule,
+  getSchedulesByTutor,
   updateSchedule,
-  deleteSchedule,
-} = require('../controllers/scheduleController');
+  deleteSchedule } = require("../controllers/scheduleController")
+
 
 const { tutorRegister, verifyEmail, tutorLogin, getAllTutors, editTutorProfile, changeTutorPassword, updateTutorProfile, getTutorById } = require("../controllers/tutor_controller");
 
@@ -36,11 +35,12 @@ router.get("/list", getAllTutors);
 router.get("/:id", getTutorById);
 router.put('/:id/edit', upload.single("image"), editTutorProfile);
 // add schedule routes 
-router.post('/add-schedule', addSchedule);
-router.get('/get-schedule', getSchedules);
+router.post('/:tutorId/add-schedule', addSchedule);
+router.get('/:tutorId/get-schedules', getSchedulesByTutor);
 router.put('/update-schedule/:id', updateSchedule);
+router.delete('/delete-schedule/:id', deleteSchedule);
+
 // Route definition for updating tutor profile
 router.put('/:tutorId', updateTutorProfile);
-router.delete('/delete-schedule/:id', deleteSchedule);
 
 module.exports = router;

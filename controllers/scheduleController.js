@@ -1,96 +1,140 @@
 // controllers/scheduleController.js
 const Schedule = require('../models/scheduleModel');
+const Tutor = require('../models/tutorSchema'); // Ensure you have the correct path
 
 // Create a new schedule
 const addSchedule = async (req, res) => {
     try {
-        const scheduleData = req.body;
-        const { startAt, endAt, day } = scheduleData;
+        const { tutorId } = req.params;
+        const { startAt, endAt, day } = req.body;
 
-        // Get today's date and the current time
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Set time to midnight for date comparison
+        if (!tutorId) {
+            return res.status(400).json({ message: 'Tutor ID is required.' });
+        }
 
-        // Get the date for the selected day (assuming day is in "YYYY-MM-DD" format)
-        const selectedDate = new Date(today);
+        // Verify that the tutor exists
+        const tutorExists = await Tutor.findById(tutorId);
+        if (!tutorExists) {
+            return res.status(404).json({ message: 'Tutor not found.' });
+        }
+
+        // Validate day input
         const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        const dayIndex = daysOfWeek.indexOf(day);
-
-        if (dayIndex === -1) {
+        if (!daysOfWeek.includes(day)) {
             return res.status(400).json({ message: 'Invalid day selected.' });
         }
 
-        // Calculate the date for the selected day of the week
-        selectedDate.setDate(today.getDate() + (dayIndex - today.getDay() + 7) % 7); // Ensures it gets the next occurrence of the selected day
+        // Additional validation can be added here (e.g., time format, startAt < endAt)
 
-        // Check if the selected date is in the past
-        if (selectedDate < today) {
-            return res.status(400).json({ message: 'Cannot add schedule for a past date.' });
-        }
-
-        // Check if startAt and endAt are the same
-       
-
-        // Check if there is already a schedule for the same day and time
+        // Check if there is already a schedule for the same tutor, day, and time
         const existingSchedule = await Schedule.findOne({
+            tutor: tutorId,
             day: day,
             startAt: startAt,
             endAt: endAt,
         });
 
         if (existingSchedule) {
-            return res.status(400).json({ message: 'Schedule for the same time already exists.' });
+            return res.status(400).json({ message: 'Schedule for the same time already exists for this tutor.' });
         }
 
         // Create and save the new schedule
-        const newSchedule = new Schedule(scheduleData);
+        const newSchedule = new Schedule({
+            tutor: tutorId,
+            startAt,
+            endAt,
+            day
+        });
         await newSchedule.save();
 
         res.status(200).json({ message: 'Schedule created successfully', newSchedule });
     } catch (error) {
+        console.error('Error adding schedule:', error);
         res.status(500).json({ message: 'Failed to create schedule', error: error.message });
     }
 };
 
+// Get schedules for a specific tutor
+const getSchedulesByTutor = async (req, res) => {
+    const { tutorId } = req.params;
 
-
-// Get all schedules
-const getSchedules = async (req, res) => {
     try {
-        const schedules = await Schedule.find();
+        // Find schedules for a specific tutor
+        const schedules = await Schedule.find({ tutor: tutorId });
+
+        if (!schedules || schedules.length === 0) {
+            return res.status(404).json({ message: 'No schedules found for this tutor' });
+        }
+
         res.status(200).json(schedules);
     } catch (error) {
+        console.error('Error fetching schedules:', error);
         res.status(500).json({ message: 'Failed to retrieve schedules', error: error.message });
     }
 };
+
 
 // Update a schedule by ID
 const updateSchedule = async (req, res) => {
     try {
         const { id } = req.params;
-        const updatedSchedule = await Schedule.findByIdAndUpdate(id, req.body, { new: true });
-        if (!updatedSchedule) {
+        const { tutorId, startAt, endAt, day } = req.body;
+
+        // Optionally, verify that the schedule belongs to the tutor
+        const schedule = await Schedule.findById(id);
+        if (!schedule) {
             return res.status(404).json({ message: 'Schedule not found' });
         }
-        res.status(200).json({ message: 'Schedule updated successfully', updatedSchedule });
+
+        // If you want to ensure that only the owner tutor can update
+        if (tutorId && schedule.tutor.toString() !== tutorId) {
+            return res.status(403).json({ message: 'You are not authorized to update this schedule.' });
+        }
+
+        // Update the schedule fields
+        schedule.startAt = startAt || schedule.startAt;
+        schedule.endAt = endAt || schedule.endAt;
+        schedule.day = day || schedule.day;
+
+        await schedule.save();
+
+        res.status(200).json({ message: 'Schedule updated successfully', schedule });
     } catch (error) {
+        console.error('Error updating schedule:', error);
         res.status(500).json({ message: 'Failed to update schedule', error: error.message });
     }
 };
+
 
 // Delete a schedule by ID
 const deleteSchedule = async (req, res) => {
     try {
         const { id } = req.params;
-        const deletedSchedule = await Schedule.findByIdAndDelete(id);
-        if (!deletedSchedule) {
+
+        // Optionally, verify that the schedule belongs to the tutor
+        const schedule = await Schedule.findById(id);
+        if (!schedule) {
             return res.status(404).json({ message: 'Schedule not found' });
         }
+
+        // If you want to ensure that only the owner tutor can delete
+        // const { tutorId } = req.body; // Or get from authenticated user
+        // if (schedule.tutor.toString() !== tutorId) {
+        //     return res.status(403).json({ message: 'You are not authorized to delete this schedule.' });
+        // }
+
+        await schedule.remove();
+
         res.status(200).json({ message: 'Schedule deleted successfully' });
     } catch (error) {
+        console.error('Error deleting schedule:', error);
         res.status(500).json({ message: 'Failed to delete schedule', error: error.message });
     }
 };
 
-// Export the controller functions
-module.exports = { addSchedule, getSchedules, updateSchedule, deleteSchedule };
+module.exports = {
+    addSchedule,
+    getSchedulesByTutor,
+    updateSchedule,
+    deleteSchedule
+};
