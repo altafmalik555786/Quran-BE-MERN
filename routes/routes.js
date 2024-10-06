@@ -20,6 +20,7 @@ const {
 const validationMiddleware = require("../middlewares/validationMiddleware");
 const authenticateToken = require("../middlewares/authenticateToken.js");
 const { addStudentPlan } = require("../controllers/studentPlanController.js");
+const { sendInvite, getSentInvites, getReceivedInvites, updateInviteStatus } = require("../controllers/inviteController.js");
 
 
 
@@ -45,6 +46,12 @@ router.get('/:studentId/profile', authenticateToken, getStudentProfile);
 router.put("/:studentId/change-password", validationMiddleware(changePasswordValidation), changePassword);
 router.put("/:studentId/update-profile", upload.single("image"), updateProfile);
 router.get("/students-list", getAllStudents);
+
+// Invite routes 
+router.post('/send', sendInvite); // Send invite
+router.get('/sent', getSentInvites); // View sent invites
+router.get('/received', getReceivedInvites); // View received invites
+router.post('/status', updateInviteStatus); // Update invite status
 
 
 // Tutor Routes
