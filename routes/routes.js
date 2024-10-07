@@ -23,7 +23,6 @@ const { addStudentPlan } = require("../controllers/studentPlanController.js");
 const { sendInvite, getSentInvites, getReceivedInvites, updateInviteStatus } = require("../controllers/inviteController.js");
 
 
-
 const router = express.Router();
 
 // Configure multer
