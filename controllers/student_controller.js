@@ -378,11 +378,6 @@ const getAllStudents = async (req, res) => {
 };
 
 
-
-
-
-
-
 module.exports = {
   getStudentProfile,
   studentRegister,
