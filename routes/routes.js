@@ -21,6 +21,7 @@ const validationMiddleware = require("../middlewares/validationMiddleware");
 const authenticateToken = require("../middlewares/authenticateToken.js");
 const { addStudentPlan } = require("../controllers/studentPlanController.js");
 const { sendInvite, getSentInvites, getReceivedInvites, updateInviteStatus } = require("../controllers/inviteController.js");
+const { sendMessage, getMessages } = require("../controllers/MessageController.js");
 
 
 
@@ -54,7 +55,9 @@ router.get('/received', getReceivedInvites); // View received invites
 router.post('/status', updateInviteStatus); // Update invite status
 
 
-// Tutor Routes
+// chat Routes
+router.post('/messages', sendMessage);
+router.get('/messages/:studentId/:tutorId', getMessages);
 
 
 module.exports = router;
