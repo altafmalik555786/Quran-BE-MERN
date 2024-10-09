@@ -33,8 +33,6 @@ app.get('/', (req, res) => {
   res.send('Server is running!');
 });
 
-app.get('/', (req, res) => res.send('Hello World!'));
-
 
 // Start server
 app.listen(PORT, () => {
