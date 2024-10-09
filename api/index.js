@@ -32,6 +32,12 @@ app.use('/api/v1/tutor', tutorRoutes);
 app.get('/', (req, res) => {
   res.send('Server is running!');
 });
+
+app.get('/hello', (req, res) => {
+    res.status(200).json({ message: 'Hello from Vercel!' });
+});
+
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server started at port no. ${PORT}`);
