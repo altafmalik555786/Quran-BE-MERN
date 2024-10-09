@@ -11,27 +11,31 @@ const path = require("path");
 
 
 const app = express();
-const PORT = process.env.PORT
+// const PORT = process.env.PORT
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('uploads/tutor', express.static(path.join(__dirname, 'uploads/tutor')));
-dotenv.config();
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// app.use('uploads/tutor', express.static(path.join(__dirname, 'uploads/tutor')));
+// dotenv.config();
 
-// Middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(cors());
+// // Middleware
+// app.use(express.json({ limit: '10mb' }));
+// app.use(cors());
 
-// Connect to MongoDB
-connectDB();
+// // Connect to MongoDB
+// connectDB();
 
-// Routes
-app.use('/api/v1', studentRoutes);
-app.use('/api/v1/tutor', tutorRoutes);
+// // Routes
+// app.use('/api/v1', studentRoutes);
+// app.use('/api/v1/tutor', tutorRoutes);
 
-// Test route
-app.get('/', (req, res) => {
-  res.send('Server is running!');
-});
+// // Test route
+// app.get('/', (req, res) => {
+//   res.send('Server is running!');
+// });
+
+app.get('/', (req, res) => res.send('Hello World!'));
+
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server started at port no. ${PORT}`);
