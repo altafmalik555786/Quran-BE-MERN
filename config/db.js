@@ -2,9 +2,20 @@ const mongoose = require('mongoose');
 const Tutor = require('../models/tutorSchema');
 
 const connectDB = async () => {
+    // const uri = "mongodb+srv://altafmalik555786:altafmalik555786@cluster0.duqdw.mongodb.net/dysoftech?retryWrites=true&w=majority&appName=Cluster0";
+    const uri = "mongodb+srv://altafmalik555786:W2crTtmPoDOJ2YZs@cluster0.duqdw.mongodb.net/";
+
     try {
-        await mongoose.connect(process.env.MONGO_URL);
-        console.log('Connected to MongoDB');
+        // MongoDB Connection
+        mongoose.connect(uri);
+        const database = mongoose.connection;
+        database.on("error", (error) => {
+            console.log(error);
+        });
+        database.once("connected", () => {
+            console.log("Database Connected");
+        });
+
         // Check if a tutor with the specified email already exist
         const existingTutor = await Tutor.findOne({ email: "altafmalik555786@gmail.com" });
         if (!existingTutor) {
